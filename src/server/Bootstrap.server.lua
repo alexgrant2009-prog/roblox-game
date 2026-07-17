@@ -202,35 +202,63 @@ end)
 -- ---------------------------------------------------------------------------
 -- Game loop
 -- ---------------------------------------------------------------------------
+-- Which players are currently standing on the START pad.
+local function playersOnPad(): { Player }
+	local rp = ctx.Kitchen and ctx.Kitchen.readyPad
+	local pad = rp and rp.part
+	local out = {}
+	if not pad then
+		return out
+	end
+	local pos, size = pad.Position, pad.Size
+	for _, player in ipairs(currentPlayers()) do
+		local char = player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart")
+		if hrp then
+			local d = hrp.Position - pos
+			if math.abs(d.X) <= size.X / 2 + 2 and math.abs(d.Z) <= size.Z / 2 + 2 and math.abs(d.Y) <= 6 then
+				table.insert(out, player)
+			end
+		end
+	end
+	return out
+end
+
+local function updatePad(onCount: number, need: number, launching: boolean)
+	local rp = ctx.Kitchen and ctx.Kitchen.readyPad
+	if not rp then
+		return
+	end
+	if rp.count then
+		rp.count.Text = launching and "starting..." or ("%d / %d on the pad"):format(onCount, need)
+	end
+	if rp.part then
+		rp.part.Color = (need > 0 and onCount >= need) and Color3.fromRGB(120, 240, 140)
+			or Color3.fromRGB(150, 170, 160)
+	end
+end
+
+-- Wait until every present player (>= MinPlayers) is standing on the START pad,
+-- then hold briefly to make sure nobody stepped off.
 local function waitForReady()
 	State.phase = "LOBBY"
 	ctx.emitHud()
 
-	-- Need enough players first.
-	while #currentPlayers() < GameConfig.MinPlayers do
-		task.wait(1)
-	end
-
-	-- Then wait for everyone present to ready up (or the timeout).
-	local waited = 0
 	while true do
 		local players = currentPlayers()
-		if #players >= GameConfig.MinPlayers then
-			local allReady = true
-			for _, p in ipairs(players) do
-				if not State.ready[p] then
-					allReady = false
-					break
-				end
+		local onPad = playersOnPad()
+		local need = math.max(GameConfig.MinPlayers, #players)
+		updatePad(#onPad, need, false)
+
+		if #players >= GameConfig.MinPlayers and #onPad >= need then
+			updatePad(#onPad, need, true)
+			task.wait(1.2)
+			local still = playersOnPad()
+			if #currentPlayers() >= GameConfig.MinPlayers and #still >= math.max(GameConfig.MinPlayers, #currentPlayers()) then
+				return
 			end
-			if allReady or waited >= GameConfig.ReadyTimeout then
-				break
-			end
-			waited += 1
-		else
-			waited = 0
 		end
-		task.wait(1)
+		task.wait(0.4)
 	end
 end
 

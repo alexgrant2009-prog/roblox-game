@@ -20,9 +20,7 @@ local helpPinned = false -- toggled with H
 local dishLabel: TextLabel
 local toastHolder: Frame
 local lobbyFrame: Frame
-local readyBtn: TextButton
 local summaryFrame: Frame
-local hasReadied = false
 
 local ROLE_INFO = {
 	Reader = { color = Color3.fromRGB(80, 130, 225), desc = "Read the tickets aloud. You can't touch the kitchen." },
@@ -161,64 +159,40 @@ function ClientHUD.init(player: Player, rem)
 	toastLayout.Padding = UDim.new(0, 4)
 	toastLayout.Parent = toastHolder
 
-	-- Lobby ready-up overlay ----------------------------------------------
+	-- Lobby banner (non-blocking, so you can see and walk to the START pad) --
 	lobbyFrame = Instance.new("Frame")
-	lobbyFrame.Size = UDim2.new(1, 0, 1, 0)
-	lobbyFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
-	lobbyFrame.BackgroundTransparency = 0.3
+	lobbyFrame.AnchorPoint = Vector2.new(0.5, 0)
+	lobbyFrame.Position = UDim2.new(0.5, 0, 0, 74)
+	lobbyFrame.Size = UDim2.new(0, 560, 0, 96)
+	lobbyFrame.BackgroundColor3 = Color3.fromRGB(24, 22, 30)
+	lobbyFrame.BackgroundTransparency = 0.15
 	lobbyFrame.BorderSizePixel = 0
 	lobbyFrame.Visible = false
+	local lbc = Instance.new("UICorner")
+	lbc.CornerRadius = UDim.new(0, 12)
+	lbc.Parent = lobbyFrame
 	lobbyFrame.Parent = gui
 
 	local lobbyTitle = Instance.new("TextLabel")
-	lobbyTitle.AnchorPoint = Vector2.new(0.5, 0.5)
-	lobbyTitle.Position = UDim2.new(0.5, 0, 0.36, 0)
-	lobbyTitle.Size = UDim2.new(0, 700, 0, 120)
+	lobbyTitle.Position = UDim2.new(0, 0, 0, 10)
+	lobbyTitle.Size = UDim2.new(1, 0, 0, 40)
 	lobbyTitle.BackgroundTransparency = 1
 	lobbyTitle.Font = Enum.Font.GothamBold
-	lobbyTitle.TextSize = 52
+	lobbyTitle.TextSize = 30
 	lobbyTitle.TextColor3 = Color3.fromRGB(255, 235, 190)
 	lobbyTitle.Text = "BLACKOUT BAKERY"
 	lobbyTitle.Parent = lobbyFrame
 
 	local lobbySub = Instance.new("TextLabel")
-	lobbySub.AnchorPoint = Vector2.new(0.5, 0.5)
-	lobbySub.Position = UDim2.new(0.5, 0, 0.48, 0)
-	lobbySub.Size = UDim2.new(0, 640, 0, 60)
+	lobbySub.Position = UDim2.new(0, 12, 0, 50)
+	lobbySub.Size = UDim2.new(1, -24, 0, 38)
 	lobbySub.BackgroundTransparency = 1
-	lobbySub.Font = Enum.Font.Gotham
-	lobbySub.TextSize = 18
+	lobbySub.Font = Enum.Font.GothamMedium
+	lobbySub.TextSize = 17
 	lobbySub.TextWrapped = true
-	lobbySub.TextColor3 = Color3.fromRGB(210, 210, 220)
-	lobbySub.Text = "2-4 player co-op. One reads, one cooks, one tastes -- nobody has all the info. Roles rotate each round."
+	lobbySub.TextColor3 = Color3.fromRGB(150, 235, 170)
+	lobbySub.Text = "Stand on the green ⭐ START pad with your team to begin."
 	lobbySub.Parent = lobbyFrame
-
-	readyBtn = Instance.new("TextButton")
-	readyBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-	readyBtn.Position = UDim2.new(0.5, 0, 0.62, 0)
-	readyBtn.Size = UDim2.new(0, 240, 0, 60)
-	readyBtn.BackgroundColor3 = Color3.fromRGB(90, 180, 110)
-	readyBtn.Font = Enum.Font.GothamBold
-	readyBtn.TextSize = 24
-	readyBtn.TextColor3 = Color3.new(1, 1, 1)
-	readyBtn.Text = "READY UP"
-	readyBtn.AutoButtonColor = true
-	local rbc = Instance.new("UICorner")
-	rbc.CornerRadius = UDim.new(0, 12)
-	rbc.Parent = readyBtn
-	readyBtn.Parent = lobbyFrame
-
-	readyBtn.Activated:Connect(function()
-		if hasReadied then
-			return
-		end
-		hasReadied = true
-		readyBtn.Text = "WAITING FOR OTHERS..."
-		readyBtn.BackgroundColor3 = Color3.fromRGB(90, 100, 120)
-		if remotes then
-			remotes.Ready:FireServer()
-		end
-	end)
 
 	-- Summary modal --------------------------------------------------------
 	summaryFrame = Instance.new("Frame")
@@ -465,16 +439,9 @@ function ClientHUD.update(data)
 		dishLabel.Text = ""
 	end
 
-	-- Lobby overlay visibility
+	-- Lobby banner visibility
 	local inLobby = (data.phase == "LOBBY")
-	if lobbyFrame.Visible ~= inLobby then
-		lobbyFrame.Visible = inLobby
-		if inLobby then
-			hasReadied = false
-			readyBtn.Text = "READY UP"
-			readyBtn.BackgroundColor3 = Color3.fromRGB(90, 180, 110)
-		end
-	end
+	lobbyFrame.Visible = inLobby
 
 	-- How-to-Play: always up in the lobby; elsewhere it's the [H] toggle.
 	if helpFrame then

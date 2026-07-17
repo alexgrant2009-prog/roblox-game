@@ -44,7 +44,7 @@ Roles **rotate every round** so everyone plays all three across a session.
 
 ## Core loop
 
-1. Lobby — players ready up.
+1. Lobby — players gather on the **START pad**; when everyone's on it, the shift launches.
 2. Server assigns roles; a **countdown** starts the shift.
 3. Orders spawn into a queue, each with a **patience timer**. The Reader sees
    them; the front order is "now serving".

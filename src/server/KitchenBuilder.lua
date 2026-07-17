@@ -191,6 +191,48 @@ function KitchenBuilder.build(ctx)
 	spawn.Duration = 0 -- no spawn forcefield
 	spawn.Parent = model
 
+	-- START pad: players stand here with their team to launch the shift.
+	local readyPad = makePart({
+		Name = "ReadyPad",
+		Size = Vector3.new(14, 1, 8),
+		Position = Vector3.new(0, 0.6, 12),
+		Color = Color3.fromRGB(90, 200, 120),
+		Material = Enum.Material.Neon,
+	})
+	readyPad.Parent = model
+	pointLight(readyPad, Color3.fromRGB(120, 255, 150), 2, 20)
+
+	local padGui = Instance.new("BillboardGui")
+	padGui.Name = "PadGui"
+	padGui.Size = UDim2.fromOffset(240, 96)
+	padGui.StudsOffset = Vector3.new(0, 6, 0)
+	padGui.AlwaysOnTop = true
+	padGui.MaxDistance = 120
+	padGui.LightInfluence = 0
+	padGui.Adornee = readyPad
+	padGui.Parent = readyPad
+
+	local padTitle = Instance.new("TextLabel")
+	padTitle.Size = UDim2.fromScale(1, 0.55)
+	padTitle.BackgroundTransparency = 1
+	padTitle.Font = Enum.Font.GothamBlack
+	padTitle.TextScaled = true
+	padTitle.Text = "⭐ START"
+	padTitle.TextColor3 = Color3.fromRGB(150, 255, 170)
+	padTitle.TextStrokeTransparency = 0.4
+	padTitle.Parent = padGui
+
+	local padCount = Instance.new("TextLabel")
+	padCount.Position = UDim2.fromScale(0, 0.55)
+	padCount.Size = UDim2.fromScale(1, 0.45)
+	padCount.BackgroundTransparency = 1
+	padCount.Font = Enum.Font.GothamBold
+	padCount.TextScaled = true
+	padCount.Text = "stand here with your team"
+	padCount.TextColor3 = Color3.fromRGB(235, 235, 240)
+	padCount.TextStrokeTransparency = 0.5
+	padCount.Parent = padGui
+
 	-- Back counter + ingredient bins ---------------------------------------
 	local order = RecipeConfig.IngredientOrder
 	local step = 6.6
@@ -364,7 +406,7 @@ function KitchenBuilder.build(ctx)
 	local podium = makePart({
 		Name = "ReaderPodium",
 		Size = Vector3.new(6, 4, 3),
-		Position = Vector3.new(0, 2, 12),
+		Position = Vector3.new(-18, 2, 14),
 		Color = Color3.fromRGB(70, 90, 140),
 		Material = Enum.Material.SmoothPlastic,
 	})
@@ -372,7 +414,7 @@ function KitchenBuilder.build(ctx)
 	local screen = makePart({
 		Name = "ReaderScreen",
 		Size = Vector3.new(5, 3, 0.4),
-		Position = Vector3.new(0, 5.4, 12),
+		Position = Vector3.new(-18, 5.4, 14),
 		Color = Color3.fromRGB(24, 26, 40),
 		Material = Enum.Material.SmoothPlastic,
 	})
@@ -391,6 +433,7 @@ function KitchenBuilder.build(ctx)
 	return {
 		model = model,
 		bins = bins,
+		readyPad = { part = readyPad, title = padTitle, count = padCount },
 		mixing = { part = bowl, tastePrompt = tastePrompt, discardPrompt = discardPrompt },
 		oven = { part = oven, bakePrompt = bakePrompt, gauge = { gui = gauge, label = gLabel, fill = barFill } },
 		submit = { part = pass, servePrompt = servePrompt },

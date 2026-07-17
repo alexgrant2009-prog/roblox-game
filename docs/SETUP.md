@@ -57,8 +57,8 @@ The folder names and layout matter — the scripts `require` each other by path.
 
 **Solo (default).** Just press **Play**. `GameConfig.MinPlayers = 1` and
 `SoloRoleAll = true`, so a lone player gets the **Solo** role — you can read the
-ticket, cook, bake, and taste all by yourself to walk the whole loop. Ready up
-on the title screen and go.
+ticket, cook, bake, and taste all by yourself to walk the whole loop. Walk onto
+the green **START pad** and the shift begins.
 
 **Real hidden-info game (2–4 players).** Set `GameConfig.MinPlayers = 2` (leave
 `SoloRoleAll` as-is; it only kicks in with exactly one player). In Studio use
