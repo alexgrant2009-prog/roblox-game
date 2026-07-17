@@ -1,33 +1,11 @@
 --!strict
 -- IngredientStation (Server)
--- Handles the ProximityPrompt triggers on the bins and the mixing bowl.
--- Every handler re-checks the acting player's role on the SERVER before doing
--- anything -- this is the authoritative gate. Client-side prompt hiding is only
--- UX; a Reader who re-enables a bin prompt via exploit still gets rejected here.
+-- Handles the mixing-bowl prompts (Taste and Scrap). Every handler re-checks the
+-- acting player's role on the SERVER -- this is the authoritative gate; the
+-- client-side prompt hiding is only UX. (Grabbing ingredients at the bins is
+-- handled by CarrySystem, which carries them to the bowl.)
 
 local IngredientStation = {}
-
--- Add one unit of an ingredient to the shared bowl. Cooks only.
-function IngredientStation.handleAdd(ctx, player: Player, ingredient: string, binPart: BasePart?)
-	if not ctx.Roles:can(player, ctx.Roles.Cook) then
-		return
-	end
-	if ctx.State.phase ~= "ACTIVE" then
-		return
-	end
-	if ctx.Dish.baking then
-		return -- can't touch the bowl while it's in the oven
-	end
-	if ctx.Dish.burnt then
-		return -- scrap the burnt dish first
-	end
-	ctx.Dish:add(ingredient, 1)
-	ctx.sfxAt(ctx.Kitchen and ctx.Kitchen.mixing.part, "AddIngredient")
-	if binPart then
-		ctx.tossFx(ingredient, binPart.Position + Vector3.new(0, 2, 0))
-	end
-	ctx.emitDishChanged()
-end
 
 -- Taste the in-progress dish -> fuzzy hint fired back to this Taster only.
 function IngredientStation.handleTaste(ctx, player: Player)

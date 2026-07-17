@@ -48,7 +48,9 @@ Roles **rotate every round** so everyone plays all three across a session.
 2. Server assigns roles; a **countdown** starts the shift.
 3. Orders spawn into a queue, each with a **patience timer**. The Reader sees
    them; the front order is "now serving".
-4. Cook builds the dish; Taster tastes for hints; Reader relays the recipe.
+4. Cook builds the dish — **grab** an ingredient at a bin (it goes into their
+   hand), carry it to the bowl where it drops in; Taster tastes for hints;
+   Reader relays the recipe.
 5. Cook **bakes** the dish in the oven — a timing challenge: pull it out during
    the **ready window** or it **burns** and has to be scrapped. Then serves at
    the window — perfect / close / wrong is scored.
@@ -68,7 +70,8 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `OrderManager` | Server | Picks recipes, patience timers, **fires ticket to Reader only** |
 | `DishState`    | Server | Tracks the in-progress dish + its bake state |
 | `BowlVisual`   | Server | Shows the bowl's contents as coloured bits (golden dome when baked, charred when burnt) |
-| `IngredientStation` | Server | ProximityPrompt triggers → role check → DishState / taste |
+| `IngredientStation` | Server | Bowl prompts (taste / scrap) → role check → DishState |
+| `CarrySystem`  | Server | Cook grabs an ingredient into hand, carries it, auto-drops it into the bowl |
 | `OvenStation`  | Server | The bake step: put-in/take-out timing window, burn, live oven gauge + glow |
 | `TasteService` | Server | Diffs dish vs recipe, fuzzy hint to Taster only |
 | `SubmitStation`| Server | Scores final dish (must be baked), adjusts reputation, queues next order |

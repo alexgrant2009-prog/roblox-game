@@ -25,6 +25,7 @@ local TasteService = require(serverFolder.TasteService)
 local SubmitStation = require(serverFolder.SubmitStation)
 local KitchenBuilder = require(serverFolder.KitchenBuilder)
 local BowlVisual = require(serverFolder.BowlVisual)
+local CarrySystem = require(serverFolder.CarrySystem)
 
 local Remotes = Net.buildOnServer()
 
@@ -137,6 +138,7 @@ end
 local kitchen = KitchenBuilder.build(ctx)
 ctx.Kitchen = kitchen
 BowlVisual.init(kitchen.mixing.part)
+CarrySystem.init(ctx)
 
 -- Return the oven to idle (used on scrap and round reset).
 function ctx.resetOven()
@@ -145,7 +147,7 @@ end
 
 for _, bin in ipairs(kitchen.bins) do
 	bin.prompt.Triggered:Connect(function(player)
-		IngredientStation.handleAdd(ctx, player, bin.ingredient, bin.part)
+		CarrySystem.grab(ctx, player, bin.ingredient)
 	end)
 end
 kitchen.mixing.tastePrompt.Triggered:Connect(function(player)
@@ -248,6 +250,7 @@ local function runShift()
 	State.timeLeft = GameConfig.ShiftDuration
 	Dish:clear()
 	ctx.resetOven()
+	CarrySystem.clearAll()
 	BowlVisual.render(Dish)
 	Orders:reset()
 	Orders:refreshTicket()
@@ -267,6 +270,7 @@ local function runShift()
 
 	-- Summary
 	State.phase = "SUMMARY"
+	CarrySystem.clearAll()
 	local failed = State.reputation <= 0
 	ctx.emitHud()
 	ctx.sfxAll("ShiftEnd")

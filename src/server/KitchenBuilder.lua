@@ -237,7 +237,7 @@ function KitchenBuilder.build(ctx)
 			display:PivotTo(CFrame.new(x, 9.4, -19))
 		end
 
-		local pp = prompt(bin, "Add", ingName, ctx.Roles.Cook)
+		local pp = prompt(bin, "Grab", ingName, ctx.Roles.Cook)
 		pp:SetAttribute("Ingredient", ingName)
 		table.insert(bins, { ingredient = ingName, prompt = pp, part = bin })
 	end
