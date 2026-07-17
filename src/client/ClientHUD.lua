@@ -4,6 +4,7 @@
 -- Also owns the lobby ready-up button, the toast feed, and the round summary.
 
 local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 local ClientHUD = {}
 local remotes
@@ -12,6 +13,9 @@ local timerLabel: TextLabel
 local scoreLabel: TextLabel
 local roleBadge: TextLabel
 local roleDesc: TextLabel
+local helpFrame: Frame
+local helpHint: TextLabel
+local helpPinned = false -- toggled with H
 local dishLabel: TextLabel
 local toastHolder: Frame
 local lobbyFrame: Frame
@@ -210,6 +214,81 @@ function ClientHUD.init(player: Player, rem)
 	sc.CornerRadius = UDim.new(0, 16)
 	sc.Parent = summaryFrame
 	summaryFrame.Parent = gui
+
+	-- How-to-Play panel ----------------------------------------------------
+	helpFrame = Instance.new("Frame")
+	helpFrame.AnchorPoint = Vector2.new(0, 0.5)
+	helpFrame.Position = UDim2.new(0, 16, 0.5, 20)
+	helpFrame.Size = UDim2.new(0, 350, 0, 390)
+	helpFrame.BackgroundColor3 = Color3.fromRGB(24, 22, 30)
+	helpFrame.BackgroundTransparency = 0.08
+	helpFrame.BorderSizePixel = 0
+	helpFrame.Visible = false
+	local hc = Instance.new("UICorner")
+	hc.CornerRadius = UDim.new(0, 12)
+	hc.Parent = helpFrame
+
+	local hTitle = Instance.new("TextLabel")
+	hTitle.Size = UDim2.new(1, -20, 0, 34)
+	hTitle.Position = UDim2.new(0, 10, 0, 10)
+	hTitle.BackgroundTransparency = 1
+	hTitle.Font = Enum.Font.GothamBold
+	hTitle.TextSize = 20
+	hTitle.TextXAlignment = Enum.TextXAlignment.Left
+	hTitle.TextColor3 = Color3.fromRGB(255, 235, 190)
+	hTitle.Text = "HOW TO PLAY"
+	hTitle.Parent = helpFrame
+
+	local hBody = Instance.new("TextLabel")
+	hBody.Size = UDim2.new(1, -28, 1, -54)
+	hBody.Position = UDim2.new(0, 14, 0, 46)
+	hBody.BackgroundTransparency = 1
+	hBody.Font = Enum.Font.Gotham
+	hBody.TextSize = 14
+	hBody.TextXAlignment = Enum.TextXAlignment.Left
+	hBody.TextYAlignment = Enum.TextYAlignment.Top
+	hBody.TextWrapped = true
+	hBody.TextColor3 = Color3.fromRGB(225, 225, 232)
+	hBody.RichText = true
+	hBody.Text = table.concat({
+		"<b>1.</b> <font color='#ffd27a'>GRAB (E)</font> an ingredient at a bin — you carry it.",
+		"<b>2.</b> Walk to the <b>Mixing Bowl</b> — it drops in.",
+		"<b>3.</b> Repeat until the bowl matches the order.",
+		"<b>4.</b> <font color='#ffd27a'>BAKE (R)</font> at the oven, then take it out on the green <font color='#8fdc8f'>READY!</font> window — don't let it burn.",
+		"<b>5.</b> <font color='#ffd27a'>SERVE (F)</font> at the window.",
+		"",
+		"<font color='#ff9090'>Q</font> — scrap the bowl and start over.",
+		"",
+		"<b>Roles (they rotate each round):</b>",
+		"<font color='#5a82e1'>Reader</font> — sees the ticket, tells the Cook.",
+		"<font color='#e6963f'>Cook</font> — grabs, bakes, serves. No ticket.",
+		"<font color='#cd5a96'>Taster</font> — tastes the bowl (E) for a hint.",
+	}, "\n")
+	hBody.Parent = helpFrame
+	helpFrame.Parent = gui
+
+	-- Persistent "[H] Help" hint (bottom-right)
+	helpHint = Instance.new("TextLabel")
+	helpHint.AnchorPoint = Vector2.new(1, 1)
+	helpHint.Position = UDim2.new(1, -14, 1, -12)
+	helpHint.Size = UDim2.new(0, 150, 0, 26)
+	helpHint.BackgroundTransparency = 1
+	helpHint.Font = Enum.Font.GothamMedium
+	helpHint.TextSize = 15
+	helpHint.TextXAlignment = Enum.TextXAlignment.Right
+	helpHint.TextColor3 = Color3.fromRGB(200, 200, 210)
+	helpHint.Text = "[H] How to play"
+	helpHint.Parent = gui
+
+	UserInputService.InputBegan:Connect(function(input, processed)
+		if processed then
+			return
+		end
+		if input.KeyCode == Enum.KeyCode.H then
+			helpPinned = not helpPinned
+			helpFrame.Visible = helpPinned
+		end
+	end)
 end
 
 local function pushToast(text: string, color: Color3)
@@ -366,6 +445,14 @@ function ClientHUD.update(data)
 			readyBtn.Text = "READY UP"
 			readyBtn.BackgroundColor3 = Color3.fromRGB(90, 180, 110)
 		end
+	end
+
+	-- How-to-Play: always up in the lobby; elsewhere it's the [H] toggle.
+	if helpFrame then
+		helpFrame.Visible = inLobby or helpPinned
+	end
+	if helpHint then
+		helpHint.Visible = not inLobby
 	end
 end
 
