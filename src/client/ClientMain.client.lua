@@ -20,6 +20,7 @@ local ClientTicketUI = require(folder.ClientTicketUI)
 local ClientTasteUI = require(folder.ClientTasteUI)
 local ClientHUD = require(folder.ClientHUD)
 local ClientSound = require(folder.ClientSound)
+local ClientDecor = require(folder.ClientDecor)
 
 local player = Players.LocalPlayer
 local Remotes = Net.getOnClient()
@@ -30,6 +31,9 @@ local myRole = "Spectator"
 ClientHUD.init(player, Remotes)
 ClientTicketUI.init(player)
 ClientTasteUI.init(player)
+
+-- Animate the floating ingredient displays.
+ClientDecor.start()
 
 -- Enable only the prompts tagged for my role; disable the rest (locally).
 local function gatePrompt(pp: ProximityPrompt)

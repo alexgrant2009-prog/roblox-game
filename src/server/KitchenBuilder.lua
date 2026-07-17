@@ -12,6 +12,7 @@ local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("BlackoutBakery")
 local RecipeConfig = require(Shared.RecipeConfig)
+local IngredientModels = require(script.Parent.IngredientModels)
 
 local KitchenBuilder = {}
 
@@ -208,15 +209,34 @@ function KitchenBuilder.build(ctx)
 	local bins = {}
 	for i, ingName in ipairs(order) do
 		local meta = RecipeConfig.Ingredients[ingName]
+		local x = startX + (i - 1) * step
+		-- Neutral crate; the ingredient's colour/identity comes from the model
+		-- floating above it. A thin band of the ingredient colour rims the top.
 		local bin = makePart({
 			Name = "Bin_" .. ingName,
 			Size = Vector3.new(4, 3.2, 4),
-			Position = Vector3.new(startX + (i - 1) * step, 5.6, -19),
+			Position = Vector3.new(x, 5.6, -19),
+			Color = Color3.fromRGB(126, 96, 66),
+			Material = Enum.Material.WoodPlanks,
+		})
+		bin.Parent = model
+		local rim = makePart({
+			Name = "BinRim",
+			Size = Vector3.new(4.2, 0.5, 4.2),
+			Position = Vector3.new(x, 7.3, -19),
 			Color = meta.color,
 			Material = Enum.Material.SmoothPlastic,
 		})
-		bin.Parent = model
+		rim.Parent = bin
 		faceLabel(bin, meta.display)
+
+		-- Floating, animated ingredient display above the bin.
+		local display = IngredientModels.build(ingName)
+		if display then
+			display.Parent = bin
+			display:PivotTo(CFrame.new(x, 9.4, -19))
+		end
+
 		local pp = prompt(bin, "Add", ingName, ctx.Roles.Cook)
 		pp:SetAttribute("Ingredient", ingName)
 		table.insert(bins, { ingredient = ingName, prompt = pp, part = bin })

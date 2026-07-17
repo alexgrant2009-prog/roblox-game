@@ -71,12 +71,14 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `OvenStation`  | Server | The bake step: put-in/take-out timing window, burn, live oven gauge + glow |
 | `TasteService` | Server | Diffs dish vs recipe, fuzzy hint to Taster only |
 | `SubmitStation`| Server | Scores final dish (must be baked), adjusts reputation, queues next order |
-| `KitchenBuilder`| Server | Spawns the whole playable kitchen (incl. oven) at runtime |
+| `IngredientModels`| Server | Builds a part-based display model per ingredient (flour sack, eggs, milk carton, …) |
+| `KitchenBuilder`| Server | Spawns the whole playable kitchen (incl. oven + ingredient displays) at runtime |
 | `Bootstrap`    | Server | Wires everything, sound helpers + runs the game loop |
 | `ClientTicketUI` | Client | Renders tickets — only if the ticket event fired for you |
 | `ClientTasteUI`  | Client | Renders taste hints |
 | `ClientHUD`      | Client | Reputation, timer, score, role badge, bowl/bake state, lobby, summary |
 | `ClientSound`    | Client | Plays 2D UI sounds driven by the Sfx remote |
+| `ClientDecor`    | Client | Bobs + spins the floating ingredient displays (local, no network) |
 | `ClientMain`     | Client | Routes remotes + local role-based prompt hiding (UX only) |
 
 ## Design decisions made
