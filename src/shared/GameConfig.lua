@@ -36,6 +36,10 @@ GameConfig.ScorePartial     = 40
 GameConfig.MatchThreshold   = 1.0   -- >= this similarity counts as a perfect serve
 GameConfig.PartialThreshold = 0.75  -- >= this (but < perfect) is a partial serve
 
+-- Day-end star rating (out of 3). Score needed for 1 / 2 / 3 stars; surviving
+-- the shift is always worth at least 1, a failed shift is 0.
+GameConfig.StarThresholds   = { 150, 350, 600 }
+
 -- Oven bake step (timing window + burn)
 GameConfig.RequireBake   = true   -- a dish must be baked before it can be served
 GameConfig.BakeReadyTime = 3.5    -- in the oven this long => properly baked (take it out!)

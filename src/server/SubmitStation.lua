@@ -54,6 +54,9 @@ function SubmitStation.handleServe(ctx, player: Player)
 		ctx.State.score += ctx.Config.ScorePerfect
 		ctx.State.perfect += 1
 		ctx.sfxAt(servePart, "ServePerfect")
+		task.delay(0.12, function()
+			ctx.sfxAt(servePart, "ServePerfect2") -- two-note success chime
+		end)
 		ctx.announce(("Perfect %s! +%d"):format(front.recipe.name, ctx.Config.ScorePerfect), "good")
 	elseif score >= ctx.Config.PartialThreshold then
 		ctx.State.score += ctx.Config.ScorePartial

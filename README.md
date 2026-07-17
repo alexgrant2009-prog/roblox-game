@@ -79,7 +79,8 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `ClientTasteUI`  | Client | Renders taste hints |
 | `ClientHUD`      | Client | Reputation, timer, score, role badge, bowl/bake state, lobby, summary |
 | `ClientSound`    | Client | Plays 2D UI sounds driven by the Sfx remote |
-| `ClientDecor`    | Client | Bobs + spins the floating ingredient displays (local, no network) |
+| `ClientDecor`    | Client | Bobs + spins the ingredient displays and animates bin→bowl tosses (local) |
+| `MusicController` | Client | Loops background music, cross-fading between shift/idle volume |
 | `ClientMain`     | Client | Routes remotes + local role-based prompt hiding (UX only) |
 
 ## Design decisions made

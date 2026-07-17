@@ -24,6 +24,7 @@ local SoundConfig = {
 	BakeStart     = { id = SWITCH, volume = 0.7, speed = 0.8 },
 	BakeDone      = { id = PING,   volume = 0.7, speed = 1.0 },
 	ServePerfect  = { id = PING,   volume = 0.8, speed = 1.5 },
+	ServePerfect2 = { id = PING,   volume = 0.8, speed = 2.0 }, -- second note of the success chime
 	ServePartial  = { id = CLICK,  volume = 0.7, speed = 1.0 },
 	ServeFail     = { id = SPLASH, volume = 0.6, speed = 0.7 },
 
@@ -33,6 +34,17 @@ local SoundConfig = {
 	CountdownTick = { id = CLICK,  volume = 0.5, speed = 1.0 },
 	ShiftStart    = { id = PING,   volume = 0.7, speed = 1.2 },
 	ShiftEnd      = { id = PING,   volume = 0.7, speed = 0.8 },
+}
+
+-- Looping background music. Roblox's audio-privacy rules mean an arbitrary
+-- asset id won't necessarily play inside YOUR game, so this ships disabled.
+-- To enable: grab a track from the Creator Store (Toolbox -> Audio, check it's
+-- usable in your experience) and paste its id below. `volume` is used during a
+-- shift, `idleVolume` in the lobby/summary.
+SoundConfig.Music = {
+	id = "", -- e.g. "rbxassetid://1234567890"
+	volume = 0.35,
+	idleVolume = 0.12,
 }
 
 return SoundConfig

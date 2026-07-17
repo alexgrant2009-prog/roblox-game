@@ -202,7 +202,7 @@ function ClientHUD.init(player: Player, rem)
 	summaryFrame = Instance.new("Frame")
 	summaryFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 	summaryFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-	summaryFrame.Size = UDim2.new(0, 460, 0, 260)
+	summaryFrame.Size = UDim2.new(0, 460, 0, 320)
 	summaryFrame.BackgroundColor3 = Color3.fromRGB(28, 26, 34)
 	summaryFrame.BorderSizePixel = 0
 	summaryFrame.Visible = false
@@ -292,9 +292,22 @@ function ClientHUD.showSummary(data)
 	header.TextColor3 = data.failed and Color3.fromRGB(235, 110, 110) or Color3.fromRGB(140, 220, 140)
 	header.Parent = summaryFrame
 
+	-- Star rating row
+	local maxStars = data.maxStars or 3
+	local stars = math.clamp(data.stars or 0, 0, maxStars)
+	local starLabel = Instance.new("TextLabel")
+	starLabel.Size = UDim2.new(1, -20, 0, 54)
+	starLabel.Position = UDim2.new(0, 10, 0, 66)
+	starLabel.BackgroundTransparency = 1
+	starLabel.Font = Enum.Font.GothamBold
+	starLabel.TextSize = 44
+	starLabel.Text = string.rep("★", stars) .. string.rep("☆", maxStars - stars)
+	starLabel.TextColor3 = (stars > 0) and Color3.fromRGB(255, 210, 90) or Color3.fromRGB(110, 105, 115)
+	starLabel.Parent = summaryFrame
+
 	local body = Instance.new("TextLabel")
 	body.Size = UDim2.new(1, -40, 0, 150)
-	body.Position = UDim2.new(0, 20, 0, 74)
+	body.Position = UDim2.new(0, 20, 0, 132)
 	body.BackgroundTransparency = 1
 	body.Font = Enum.Font.GothamMedium
 	body.TextSize = 20

@@ -8,7 +8,7 @@
 local IngredientStation = {}
 
 -- Add one unit of an ingredient to the shared bowl. Cooks only.
-function IngredientStation.handleAdd(ctx, player: Player, ingredient: string)
+function IngredientStation.handleAdd(ctx, player: Player, ingredient: string, binPart: BasePart?)
 	if not ctx.Roles:can(player, ctx.Roles.Cook) then
 		return
 	end
@@ -23,6 +23,9 @@ function IngredientStation.handleAdd(ctx, player: Player, ingredient: string)
 	end
 	ctx.Dish:add(ingredient, 1)
 	ctx.sfxAt(ctx.Kitchen and ctx.Kitchen.mixing.part, "AddIngredient")
+	if binPart then
+		ctx.tossFx(ingredient, binPart.Position + Vector3.new(0, 2, 0))
+	end
 	ctx.emitDishChanged()
 end
 

@@ -74,3 +74,9 @@ reputation, patience, difficulty ramp, scoring, the bake timing window
 `AllowDiscard` hard-fail/soft-fail switch. Recipes and ingredients are in `src/shared/RecipeConfig.lua`, and every
 sound effect is in `src/shared/SoundConfig.lua` (built-in Roblox sounds by
 default — replace any `id` with a `rbxassetid://…` to use your own audio).
+
+**Background music** ships disabled because Roblox's audio-privacy rules mean an
+arbitrary asset id won't reliably play inside your game. To turn it on: open the
+Toolbox → Audio, pick a track marked usable in your experience, and paste its id
+into `SoundConfig.Music.id`. It then loops and cross-fades between shift and idle
+volume automatically.

@@ -14,16 +14,16 @@ local RecipeConfig = {}
 --   flavor -> drives the fuzzy taste hints (TasteService)
 --   color  -> tints the bin the KitchenBuilder spawns
 RecipeConfig.Ingredients = {
-	Flour    = { display = "Flour",    flavor = "doughy",     color = Color3.fromRGB(235, 225, 200) },
-	Sugar    = { display = "Sugar",    flavor = "sweet",      color = Color3.fromRGB(250, 250, 250) },
-	Butter   = { display = "Butter",   flavor = "rich",       color = Color3.fromRGB(245, 220, 120) },
-	Eggs     = { display = "Eggs",     flavor = "eggy",       color = Color3.fromRGB(250, 235, 170) },
-	Milk     = { display = "Milk",     flavor = "creamy",     color = Color3.fromRGB(240, 240, 245) },
-	Cocoa    = { display = "Cocoa",    flavor = "chocolatey", color = Color3.fromRGB(90, 55, 40) },
-	Berries  = { display = "Berries",  flavor = "fruity",     color = Color3.fromRGB(150, 40, 90) },
-	Salt     = { display = "Salt",     flavor = "salty",      color = Color3.fromRGB(220, 220, 225) },
-	Vanilla  = { display = "Vanilla",  flavor = "sweet",      color = Color3.fromRGB(215, 180, 140) },
-	Cinnamon = { display = "Cinnamon", flavor = "spiced",     color = Color3.fromRGB(170, 100, 60) },
+	Flour    = { display = "Flour",    flavor = "doughy",     icon = "🌾", color = Color3.fromRGB(235, 225, 200) },
+	Sugar    = { display = "Sugar",    flavor = "sweet",      icon = "🍬", color = Color3.fromRGB(250, 250, 250) },
+	Butter   = { display = "Butter",   flavor = "rich",       icon = "🧈", color = Color3.fromRGB(245, 220, 120) },
+	Eggs     = { display = "Eggs",     flavor = "eggy",       icon = "🥚", color = Color3.fromRGB(250, 235, 170) },
+	Milk     = { display = "Milk",     flavor = "creamy",     icon = "🥛", color = Color3.fromRGB(240, 240, 245) },
+	Cocoa    = { display = "Cocoa",    flavor = "chocolatey", icon = "🍫", color = Color3.fromRGB(90, 55, 40) },
+	Berries  = { display = "Berries",  flavor = "fruity",     icon = "🫐", color = Color3.fromRGB(150, 40, 90) },
+	Salt     = { display = "Salt",     flavor = "salty",      icon = "🧂", color = Color3.fromRGB(220, 220, 225) },
+	Vanilla  = { display = "Vanilla",  flavor = "sweet",      icon = "🌼", color = Color3.fromRGB(215, 180, 140) },
+	Cinnamon = { display = "Cinnamon", flavor = "spiced",     icon = "🍂", color = Color3.fromRGB(170, 100, 60) },
 }
 
 -- Stable order so the bins spawn in a predictable layout.

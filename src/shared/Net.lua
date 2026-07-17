@@ -9,6 +9,7 @@
 --   Role      server -> each player    (that player's role this round)
 --   Announce  server -> all           (toasts + the end-of-round summary)
 --   Sfx       server -> all / one     (fire-and-forget 2D UI sound by name)
+--   Toss      server -> all           (visual: an ingredient flies bin -> bowl)
 --   Ready     client -> server        (lobby ready-up)
 --
 -- The security boundary is FireClient targeting: Cooks and Tasters are never
@@ -19,7 +20,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Net = {}
 Net.FolderName = "BakeryRemotes"
-Net.Events = { "Ticket", "TasteHint", "Hud", "Role", "Announce", "Sfx", "Ready" }
+Net.Events = { "Ticket", "TasteHint", "Hud", "Role", "Announce", "Sfx", "Toss", "Ready" }
 
 -- Server: create (or find) the remotes folder and every event under it.
 function Net.buildOnServer()

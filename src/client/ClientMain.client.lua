@@ -14,6 +14,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("BlackoutBakery")
 local Net = require(Shared.Net)
+local RecipeConfig = require(Shared.RecipeConfig)
 
 local folder = script.Parent
 local ClientTicketUI = require(folder.ClientTicketUI)
@@ -21,6 +22,7 @@ local ClientTasteUI = require(folder.ClientTasteUI)
 local ClientHUD = require(folder.ClientHUD)
 local ClientSound = require(folder.ClientSound)
 local ClientDecor = require(folder.ClientDecor)
+local MusicController = require(folder.MusicController)
 
 local player = Players.LocalPlayer
 local Remotes = Net.getOnClient()
@@ -34,6 +36,7 @@ ClientTasteUI.init(player)
 
 -- Animate the floating ingredient displays.
 ClientDecor.start()
+MusicController.init()
 
 -- Enable only the prompts tagged for my role; disable the rest (locally).
 local function gatePrompt(pp: ProximityPrompt)
@@ -78,6 +81,9 @@ end)
 
 Remotes.Hud.OnClientEvent:Connect(function(data)
 	ClientHUD.update(data)
+	if typeof(data) == "table" then
+		MusicController.setActive(data.phase == "ACTIVE")
+	end
 end)
 
 Remotes.Announce.OnClientEvent:Connect(function(msg)
@@ -86,6 +92,12 @@ end)
 
 Remotes.Sfx.OnClientEvent:Connect(function(name)
 	ClientSound.play(name)
+end)
+
+Remotes.Toss.OnClientEvent:Connect(function(ingredient, from, to)
+	local meta = RecipeConfig.Ingredients[ingredient]
+	local color = (meta and meta.color) or Color3.fromRGB(230, 230, 230)
+	ClientDecor.toss(color, from, to)
 end)
 
 gateAllPrompts()

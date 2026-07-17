@@ -92,6 +92,15 @@ function ctx.sfxClient(player: Player, name: string)
 	Remotes.Sfx:FireClient(player, name)
 end
 
+-- Visual flourish: an ingredient bit arcs from a bin to the bowl (clients animate).
+function ctx.tossFx(ingredient: string, fromPos: Vector3)
+	local bowl = ctx.Kitchen and ctx.Kitchen.mixing.part
+	if not bowl then
+		return
+	end
+	Remotes.Toss:FireAllClients(ingredient, fromPos, bowl.Position + Vector3.new(0, 1.4, 0))
+end
+
 function ctx.emitHud()
 	Remotes.Hud:FireAllClients({
 		phase = State.phase,
@@ -136,7 +145,7 @@ end
 
 for _, bin in ipairs(kitchen.bins) do
 	bin.prompt.Triggered:Connect(function(player)
-		IngredientStation.handleAdd(ctx, player, bin.ingredient)
+		IngredientStation.handleAdd(ctx, player, bin.ingredient, bin.part)
 	end)
 end
 kitchen.mixing.tastePrompt.Triggered:Connect(function(player)
@@ -261,6 +270,17 @@ local function runShift()
 	local failed = State.reputation <= 0
 	ctx.emitHud()
 	ctx.sfxAll("ShiftEnd")
+
+	-- Star rating (out of 3): 0 if the shift was lost, else at least 1 plus one
+	-- for each score threshold cleared.
+	local stars = 0
+	for _, threshold in ipairs(GameConfig.StarThresholds) do
+		if State.score >= threshold then
+			stars += 1
+		end
+	end
+	stars = failed and 0 or math.max(stars, 1)
+
 	Remotes.Announce:FireAllClients({
 		kind = "summary",
 		failed = failed,
@@ -268,6 +288,8 @@ local function runShift()
 		perfect = State.perfect,
 		round = State.round,
 		roundsTotal = GameConfig.RoundsPerSession,
+		stars = stars,
+		maxStars = #GameConfig.StarThresholds,
 	})
 end
 

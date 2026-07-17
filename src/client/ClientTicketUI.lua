@@ -58,7 +58,9 @@ local function ingredientText(recipe): string
 	local parts = {}
 	for ing, qty in pairs(recipe.ingredients) do
 		local meta = RecipeConfig.Ingredients[ing]
-		table.insert(parts, string.format("%dx %s", qty, meta and meta.display or ing))
+		local name = meta and meta.display or ing
+		local icon = (meta and meta.icon) or ""
+		table.insert(parts, string.format("%dx %s %s", qty, name, icon))
 	end
 	table.sort(parts)
 	return table.concat(parts, "\n")
