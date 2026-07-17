@@ -263,8 +263,18 @@ function KitchenBuilder.build(ctx)
 	})
 	bowl.Parent = model
 	pill(bowl, "Mixing Bowl", { offsetY = 3, color = Color3.fromRGB(230, 240, 255), size = UDim2.fromOffset(120, 28) })
-	local tastePrompt = prompt(bowl, "Taste", "Mixing Bowl", ctx.Roles.Taster, Enum.KeyCode.E)
-	local discardPrompt = prompt(bowl, "Scrap Bowl", "Mixing Bowl", ctx.Roles.Cook, Enum.KeyCode.Q)
+	-- Two prompts on one part overlap and fight each other, so mount each on its
+	-- own attachment offset to opposite sides of the bowl.
+	local tasteAtt = Instance.new("Attachment")
+	tasteAtt.Name = "TastePoint"
+	tasteAtt.Parent = bowl
+	tasteAtt.WorldPosition = Vector3.new(-2, 6.2, 0)
+	local scrapAtt = Instance.new("Attachment")
+	scrapAtt.Name = "ScrapPoint"
+	scrapAtt.Parent = bowl
+	scrapAtt.WorldPosition = Vector3.new(2, 6.2, 0)
+	local tastePrompt = prompt(tasteAtt, "Taste", "Mixing Bowl", ctx.Roles.Taster, Enum.KeyCode.E)
+	local discardPrompt = prompt(scrapAtt, "Scrap Bowl", "Mixing Bowl", ctx.Roles.Cook, Enum.KeyCode.Q)
 
 	-- Oven (right) ---------------------------------------------------------
 	local oven = makePart({
