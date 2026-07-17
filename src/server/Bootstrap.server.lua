@@ -8,16 +8,19 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Debris = game:GetService("Debris")
 
 local Shared = ReplicatedStorage:WaitForChild("BlackoutBakery")
 local GameConfig = require(Shared.GameConfig)
 local Net = require(Shared.Net)
+local SoundConfig = require(Shared.SoundConfig)
 
 local serverFolder = script.Parent
 local RoleManager = require(serverFolder.RoleManager)
 local OrderManager = require(serverFolder.OrderManager)
 local DishState = require(serverFolder.DishState)
 local IngredientStation = require(serverFolder.IngredientStation)
+local OvenStation = require(serverFolder.OvenStation)
 local TasteService = require(serverFolder.TasteService)
 local SubmitStation = require(serverFolder.SubmitStation)
 local KitchenBuilder = require(serverFolder.KitchenBuilder)
@@ -61,6 +64,33 @@ function ctx.announce(text: string, kind: string?)
 	Remotes.Announce:FireAllClients({ kind = kind or "toast", text = text })
 end
 
+-- Sound helpers -------------------------------------------------------------
+-- World sound: create a Sound on a part and play it server-side. This
+-- replicates to clients, so everyone hears it positionally in the kitchen.
+function ctx.sfxAt(part: BasePart?, name: string)
+	local cfg = SoundConfig[name]
+	if not (cfg and part) then
+		return
+	end
+	local s = Instance.new("Sound")
+	s.SoundId = cfg.id
+	s.Volume = cfg.volume or 0.5
+	s.PlaybackSpeed = cfg.speed or 1
+	s.RollOffMinDistance = 8
+	s.RollOffMaxDistance = 80
+	s.Parent = part
+	s:Play()
+	Debris:AddItem(s, 6)
+end
+
+-- 2D UI sounds: tell clients to play a named sound locally.
+function ctx.sfxAll(name: string)
+	Remotes.Sfx:FireAllClients(name)
+end
+function ctx.sfxClient(player: Player, name: string)
+	Remotes.Sfx:FireClient(player, name)
+end
+
 function ctx.emitHud()
 	Remotes.Hud:FireAllClients({
 		phase = State.phase,
@@ -71,6 +101,8 @@ function ctx.emitHud()
 		round = State.round,
 		roundsTotal = GameConfig.RoundsPerSession,
 		dishTotal = Dish.total, -- Cook feedback: how many things are in the bowl (never the recipe)
+		dishBaked = Dish.baked,
+		dishBaking = Dish.baking,
 	})
 end
 
@@ -91,6 +123,7 @@ end
 -- Role checks live inside the station handlers (server-authoritative).
 -- ---------------------------------------------------------------------------
 local kitchen = KitchenBuilder.build(ctx)
+ctx.Kitchen = kitchen
 
 for _, bin in ipairs(kitchen.bins) do
 	bin.prompt.Triggered:Connect(function(player)
@@ -102,6 +135,9 @@ kitchen.mixing.tastePrompt.Triggered:Connect(function(player)
 end)
 kitchen.mixing.discardPrompt.Triggered:Connect(function(player)
 	IngredientStation.handleDiscard(ctx, player)
+end)
+kitchen.oven.bakePrompt.Triggered:Connect(function(player)
+	OvenStation.handleBake(ctx, player)
 end)
 kitchen.submit.servePrompt.Triggered:Connect(function(player)
 	SubmitStation.handleServe(ctx, player)
@@ -182,6 +218,7 @@ local function runShift()
 	ctx.emitHud()
 	for i = GameConfig.ReadyCountdown, 1, -1 do
 		ctx.announce("Shift starts in " .. i .. "...", "info")
+		ctx.sfxAll("CountdownTick")
 		task.wait(1)
 	end
 
@@ -193,6 +230,7 @@ local function runShift()
 	Orders:reset()
 	Orders:refreshTicket()
 	ctx.emitHud()
+	ctx.sfxAll("ShiftStart")
 	ctx.announce("Shift " .. State.round .. " -- get cooking!", "good")
 
 	local elapsed = 0
@@ -209,6 +247,7 @@ local function runShift()
 	State.phase = "SUMMARY"
 	local failed = State.reputation <= 0
 	ctx.emitHud()
+	ctx.sfxAll("ShiftEnd")
 	Remotes.Announce:FireAllClients({
 		kind = "summary",
 		failed = failed,

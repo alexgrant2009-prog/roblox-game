@@ -32,7 +32,7 @@ cosmetic — the server is the authority.
 | Role   | Can | Can't |
 | ------ | --- | ----- |
 | **Reader** | See the order tickets (names, ingredients, patience timers) | Interact with any bin, bowl, or oven — their prompts are gone |
-| **Cook**   | Add ingredients, scrap the bowl, serve the dish | See the ticket — there's no recipe data on their client at all |
+| **Cook**   | Add ingredients, **bake in the oven**, scrap the bowl, serve the dish | See the ticket — there's no recipe data on their client at all |
 | **Taster** | Taste the in-progress bowl for a fuzzy hint | See the ticket |
 
 - 2 players → Reader + Cook
@@ -48,7 +48,8 @@ Roles **rotate every round** so everyone plays all three across a session.
 3. Orders spawn into a queue, each with a **patience timer**. The Reader sees
    them; the front order is "now serving".
 4. Cook builds the dish; Taster tastes for hints; Reader relays the recipe.
-5. Cook serves at the window — perfect / close / wrong is scored.
+5. Cook **bakes** the dish in the oven (it can't be served raw), then serves at
+   the window — perfect / close / wrong is scored.
 6. Shift ends when the **timer** runs out or **reputation** hits zero.
 7. Summary screen → roles rotate → next round.
 
@@ -60,17 +61,20 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `GameConfig`   | Shared Module | All tuning knobs |
 | `Net`          | Shared Module | RemoteEvent definitions + direction |
 | `DishMath`     | Shared Module | Dish→recipe similarity scoring & diffs |
+| `SoundConfig`  | Shared Module | Named sound effects (built-in `rbxasset://` defaults, swappable) |
 | `RoleManager`  | Server | Assigns / rotates Reader, Cook, Taster |
 | `OrderManager` | Server | Picks recipes, patience timers, **fires ticket to Reader only** |
-| `DishState`    | Server | Tracks the in-progress dish |
+| `DishState`    | Server | Tracks the in-progress dish + its bake state |
 | `IngredientStation` | Server | ProximityPrompt triggers → role check → DishState / taste |
+| `OvenStation`  | Server | The bake step: role check, timed bake, oven glow, bake sounds |
 | `TasteService` | Server | Diffs dish vs recipe, fuzzy hint to Taster only |
-| `SubmitStation`| Server | Scores final dish, adjusts reputation, queues next order |
-| `KitchenBuilder`| Server | Spawns the whole playable kitchen at runtime |
-| `Bootstrap`    | Server | Wires everything + runs the game loop |
+| `SubmitStation`| Server | Scores final dish (must be baked), adjusts reputation, queues next order |
+| `KitchenBuilder`| Server | Spawns the whole playable kitchen (incl. oven) at runtime |
+| `Bootstrap`    | Server | Wires everything, sound helpers + runs the game loop |
 | `ClientTicketUI` | Client | Renders tickets — only if the ticket event fired for you |
 | `ClientTasteUI`  | Client | Renders taste hints |
-| `ClientHUD`      | Client | Reputation, timer, score, role badge, lobby, summary |
+| `ClientHUD`      | Client | Reputation, timer, score, role badge, bowl/bake state, lobby, summary |
+| `ClientSound`    | Client | Plays 2D UI sounds driven by the Sfx remote |
 | `ClientMain`     | Client | Routes remotes + local role-based prompt hiding (UX only) |
 
 ## Design decisions made
@@ -83,6 +87,16 @@ The spec left three open; here's what shipped (all flippable in `GameConfig`):
   Set it `false` for hard-fail panic.
 - **Labeled bins.** Bins show their ingredient name — friendlier to learn. The
   hidden-info challenge is the *recipe*, not the pantry layout.
+
+## Audio
+
+All sound effects are named in `src/shared/SoundConfig.lua` and default to
+Roblox's **built-in `rbxasset://sounds/*`** files, so the game has audio the
+moment it runs — no uploads, no moderation wait. Positional kitchen sounds
+(adding ingredients, the oven, serving) are played server-side on the world
+parts; flat UI sounds (countdown, taste, shift start/end) go through the `Sfx`
+remote to `ClientSound`. Swap any `id` for your own `rbxassetid://…` to
+reskin the audio.
 
 ## Running it
 

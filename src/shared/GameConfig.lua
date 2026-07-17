@@ -35,6 +35,10 @@ GameConfig.ScorePartial     = 40
 GameConfig.MatchThreshold   = 1.0   -- >= this similarity counts as a perfect serve
 GameConfig.PartialThreshold = 0.75  -- >= this (but < perfect) is a partial serve
 
+-- Oven bake step
+GameConfig.RequireBake      = true  -- a dish must be baked before it can be served
+GameConfig.BakeDuration     = 5     -- seconds in the oven
+
 -- Design decision (see README "Things decided"):
 -- Soft fail -- the Cook can scrap the bowl and start over. Set false for hard-fail panic.
 GameConfig.AllowDiscard     = true

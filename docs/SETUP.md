@@ -42,14 +42,14 @@ then open that file in Studio.
 If you don't want Rojo, mirror the tree manually in Studio:
 
 - `ReplicatedStorage` → a Folder **BlackoutBakery** containing ModuleScripts
-  `RecipeConfig`, `GameConfig`, `Net`, `DishMath` (from `src/shared/`).
+  `RecipeConfig`, `GameConfig`, `Net`, `DishMath`, `SoundConfig` (from `src/shared/`).
 - `ServerScriptService` → a Folder **BlackoutBakery** containing:
   - `Bootstrap` as a **Script** (the file `Bootstrap.server.lua`; drop the `.server`).
   - `RoleManager`, `OrderManager`, `DishState`, `IngredientStation`,
-    `TasteService`, `SubmitStation`, `KitchenBuilder` as **ModuleScripts**.
+    `OvenStation`, `TasteService`, `SubmitStation`, `KitchenBuilder` as **ModuleScripts**.
 - `StarterPlayer → StarterPlayerScripts` → a Folder **BlackoutBakery** containing:
   - `ClientMain` as a **LocalScript** (the file `ClientMain.client.lua`; drop the `.client`).
-  - `ClientTicketUI`, `ClientTasteUI`, `ClientHUD` as **ModuleScripts**.
+  - `ClientTicketUI`, `ClientTasteUI`, `ClientHUD`, `ClientSound` as **ModuleScripts**.
 
 The folder names and layout matter — the scripts `require` each other by path.
 
@@ -66,6 +66,8 @@ behavior), so bump it back to 2 to actually cook.
 ## Where to tune things
 
 Everything lives in `src/shared/GameConfig.lua`: shift length, starting
-reputation, patience, difficulty ramp, scoring, and the `AllowDiscard`
-hard-fail/soft-fail switch. Recipes and ingredients are in
-`src/shared/RecipeConfig.lua`.
+reputation, patience, difficulty ramp, scoring, the bake step
+(`RequireBake`, `BakeDuration`), and the `AllowDiscard` hard-fail/soft-fail
+switch. Recipes and ingredients are in `src/shared/RecipeConfig.lua`, and every
+sound effect is in `src/shared/SoundConfig.lua` (built-in Roblox sounds by
+default — replace any `id` with a `rbxassetid://…` to use your own audio).

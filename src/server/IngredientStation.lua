@@ -15,7 +15,11 @@ function IngredientStation.handleAdd(ctx, player: Player, ingredient: string)
 	if ctx.State.phase ~= "ACTIVE" then
 		return
 	end
+	if ctx.Dish.baking then
+		return -- can't touch the bowl while it's in the oven
+	end
 	ctx.Dish:add(ingredient, 1)
+	ctx.sfxAt(ctx.Kitchen and ctx.Kitchen.mixing.part, "AddIngredient")
 	ctx.emitDishChanged()
 end
 
@@ -30,6 +34,7 @@ function IngredientStation.handleTaste(ctx, player: Player)
 	local target = ctx.getFrontRecipe()
 	local hint = ctx.TasteService.hintFor(ctx.Dish:snapshot(), target)
 	ctx.Remotes.TasteHint:FireClient(player, hint) -- Taster only
+	ctx.sfxClient(player, "Taste")
 end
 
 -- Scrap the bowl and start over (soft fail). Cooks only, and only if enabled.
@@ -46,7 +51,11 @@ function IngredientStation.handleDiscard(ctx, player: Player)
 	if ctx.Dish.total == 0 then
 		return
 	end
+	if ctx.Dish.baking then
+		return -- let the oven finish before scrapping
+	end
 	ctx.Dish:clear()
+	ctx.sfxAt(ctx.Kitchen and ctx.Kitchen.mixing.part, "Scrap")
 	ctx.emitDishChanged()
 	ctx.announce("The bowl was scrapped -- starting fresh.", "info")
 end

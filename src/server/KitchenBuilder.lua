@@ -119,11 +119,32 @@ function KitchenBuilder.build(ctx)
 	local tastePrompt = prompt(bowl, "Taste", "Mixing Bowl", ctx.Roles.Taster, Enum.KeyCode.E)
 	local discardPrompt = prompt(bowl, "Scrap Bowl", "Mixing Bowl", ctx.Roles.Cook, Enum.KeyCode.Q)
 
-	-- Serve window (the oven pass)
+	-- Oven: Cook bakes the mixed dish here before it can be served
+	local oven = makePart({
+		Name = "OvenStation",
+		Size = Vector3.new(6, 6, 5),
+		Position = Vector3.new(1, 3, 6),
+		Color = Color3.fromRGB(70, 68, 74),
+		Material = Enum.Material.DiamondPlate,
+	})
+	oven.Parent = model
+	-- Oven door detail
+	local door = makePart({
+		Name = "OvenDoor",
+		Size = Vector3.new(4.2, 3.4, 0.4),
+		Position = Vector3.new(1, 3, 3.7),
+		Color = Color3.fromRGB(30, 28, 34),
+		Material = Enum.Material.Glass,
+	})
+	door.Parent = oven
+	label(oven, "Oven", Color3.fromRGB(255, 180, 120))
+	local bakePrompt = prompt(oven, "Bake", "Oven", ctx.Roles.Cook, Enum.KeyCode.R)
+
+	-- Serve window (the pass)
 	local pass = makePart({
 		Name = "SubmitStation",
 		Size = Vector3.new(9, 5, 4),
-		Position = Vector3.new(14, 2.5, 6),
+		Position = Vector3.new(16, 2.5, 6),
 		Color = Color3.fromRGB(120, 85, 60),
 		Material = Enum.Material.WoodPlanks,
 	})
@@ -148,6 +169,7 @@ function KitchenBuilder.build(ctx)
 		model = model,
 		bins = bins,
 		mixing = { part = bowl, tastePrompt = tastePrompt, discardPrompt = discardPrompt },
+		oven = { part = oven, bakePrompt = bakePrompt },
 		submit = { part = pass, servePrompt = servePrompt },
 	}
 end

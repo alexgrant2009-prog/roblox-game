@@ -19,6 +19,7 @@ local folder = script.Parent
 local ClientTicketUI = require(folder.ClientTicketUI)
 local ClientTasteUI = require(folder.ClientTasteUI)
 local ClientHUD = require(folder.ClientHUD)
+local ClientSound = require(folder.ClientSound)
 
 local player = Players.LocalPlayer
 local Remotes = Net.getOnClient()
@@ -68,6 +69,7 @@ end)
 
 Remotes.TasteHint.OnClientEvent:Connect(function(hint)
 	ClientTasteUI.show(hint)
+	ClientSound.play("Taste")
 end)
 
 Remotes.Hud.OnClientEvent:Connect(function(data)
@@ -76,6 +78,10 @@ end)
 
 Remotes.Announce.OnClientEvent:Connect(function(msg)
 	ClientHUD.announce(msg)
+end)
+
+Remotes.Sfx.OnClientEvent:Connect(function(name)
+	ClientSound.play(name)
 end)
 
 gateAllPrompts()

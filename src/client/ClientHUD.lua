@@ -310,9 +310,25 @@ function ClientHUD.update(data)
 	timerLabel.Text = "Time " .. fmtTime(data.timeLeft or 0)
 	scoreLabel.Text = "Score " .. tostring(data.score or 0)
 
-	-- Cook feedback: how many items are in the bowl (never what they should be).
-	local n = data.dishTotal or 0
-	dishLabel.Text = (data.phase == "ACTIVE") and ("Bowl: " .. n .. (n == 1 and " item" or " items")) or ""
+	-- Cook feedback: how many items are in the bowl (never what they should be),
+	-- plus the bake state so the Cook knows to oven it before serving.
+	if data.phase == "ACTIVE" then
+		local n = data.dishTotal or 0
+		local state, color
+		if data.dishBaking then
+			state, color = "baking...", Color3.fromRGB(255, 180, 90)
+		elseif data.dishBaked then
+			state, color = "baked -- serve it!", Color3.fromRGB(140, 220, 140)
+		elseif n > 0 then
+			state, color = "raw -- needs baking", Color3.fromRGB(220, 200, 120)
+		else
+			state, color = "empty", Color3.fromRGB(180, 180, 190)
+		end
+		dishLabel.Text = string.format("Bowl: %d %s  (%s)", n, (n == 1 and "item" or "items"), state)
+		dishLabel.TextColor3 = color
+	else
+		dishLabel.Text = ""
+	end
 
 	-- Lobby overlay visibility
 	local inLobby = (data.phase == "LOBBY")
