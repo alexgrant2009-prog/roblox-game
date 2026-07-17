@@ -67,6 +67,7 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `RoleManager`  | Server | Assigns / rotates Reader, Cook, Taster |
 | `OrderManager` | Server | Picks recipes, patience timers, **fires ticket to Reader only** |
 | `DishState`    | Server | Tracks the in-progress dish + its bake state |
+| `BowlVisual`   | Server | Shows the bowl's contents as coloured bits (golden dome when baked, charred when burnt) |
 | `IngredientStation` | Server | ProximityPrompt triggers → role check → DishState / taste |
 | `OvenStation`  | Server | The bake step: put-in/take-out timing window, burn, live oven gauge + glow |
 | `TasteService` | Server | Diffs dish vs recipe, fuzzy hint to Taster only |

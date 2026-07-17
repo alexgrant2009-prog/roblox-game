@@ -24,6 +24,7 @@ local OvenStation = require(serverFolder.OvenStation)
 local TasteService = require(serverFolder.TasteService)
 local SubmitStation = require(serverFolder.SubmitStation)
 local KitchenBuilder = require(serverFolder.KitchenBuilder)
+local BowlVisual = require(serverFolder.BowlVisual)
 
 local Remotes = Net.buildOnServer()
 
@@ -108,6 +109,7 @@ function ctx.emitHud()
 end
 
 function ctx.emitDishChanged()
+	BowlVisual.render(Dish)
 	ctx.emitHud()
 end
 
@@ -125,6 +127,7 @@ end
 -- ---------------------------------------------------------------------------
 local kitchen = KitchenBuilder.build(ctx)
 ctx.Kitchen = kitchen
+BowlVisual.init(kitchen.mixing.part)
 
 -- Return the oven to idle (used on scrap and round reset).
 function ctx.resetOven()
@@ -236,6 +239,7 @@ local function runShift()
 	State.timeLeft = GameConfig.ShiftDuration
 	Dish:clear()
 	ctx.resetOven()
+	BowlVisual.render(Dish)
 	Orders:reset()
 	Orders:refreshTicket()
 	ctx.emitHud()
