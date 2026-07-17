@@ -62,6 +62,35 @@ local function pill(adornee: Instance, text: string, opts)
 	return tl
 end
 
+-- Paint a name directly onto a part's vertical faces. Unlike a floating
+-- billboard, a surface label can't overlap its neighbors. Both Front and Back
+-- are painted so one always faces the aisle.
+local function faceLabel(part: BasePart, text: string)
+	for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back }) do
+		local sg = Instance.new("SurfaceGui")
+		sg.Name = "FaceLabel"
+		sg.Face = face
+		sg.CanvasSize = Vector2.new(400, 320)
+		sg.LightInfluence = 0
+		sg.Parent = part
+
+		local band = Instance.new("TextLabel")
+		band.AnchorPoint = Vector2.new(0.5, 0.5)
+		band.Position = UDim2.fromScale(0.5, 0.5)
+		band.Size = UDim2.fromScale(0.9, 0.4)
+		band.BackgroundColor3 = Color3.fromRGB(22, 20, 28)
+		band.BackgroundTransparency = 0.15
+		band.Font = Enum.Font.GothamBold
+		band.TextScaled = true
+		band.TextColor3 = Color3.fromRGB(245, 245, 250)
+		band.Text = text
+		local corner = Instance.new("UICorner")
+		corner.CornerRadius = UDim.new(0.3, 0)
+		corner.Parent = band
+		band.Parent = sg
+	end
+end
+
 local function prompt(parent: Instance, actionText: string, objectText: string, role: string?, key: Enum.KeyCode?)
 	local pp = Instance.new("ProximityPrompt")
 	pp.ActionText = actionText
@@ -125,10 +154,29 @@ function KitchenBuilder.build(ctx)
 		w.Parent = model
 		return w
 	end
-	wall("WallNorth", Vector3.new(84, 22, 2), Vector3.new(0, 11, -33))
+	local northWall = wall("WallNorth", Vector3.new(84, 22, 2), Vector3.new(0, 11, -33))
 	wall("WallSouth", Vector3.new(84, 22, 2), Vector3.new(0, 11, 33))
 	wall("WallEast", Vector3.new(2, 22, 66), Vector3.new(42, 11, 0))
 	wall("WallWest", Vector3.new(2, 22, 66), Vector3.new(-42, 11, 0))
+
+	-- Back-wall sign
+	local sign = Instance.new("SurfaceGui")
+	sign.Name = "BakerySign"
+	sign.Face = Enum.NormalId.Back -- inner (+Z) face
+	sign.CanvasSize = Vector2.new(1000, 260)
+	sign.LightInfluence = 0
+	sign.Parent = northWall
+	local signText = Instance.new("TextLabel")
+	signText.AnchorPoint = Vector2.new(0.5, 1)
+	signText.Position = UDim2.fromScale(0.5, 0.92)
+	signText.Size = UDim2.fromScale(0.86, 0.42)
+	signText.BackgroundTransparency = 1
+	signText.Font = Enum.Font.GothamBlack
+	signText.TextScaled = true
+	signText.Text = "BLACKOUT BAKERY"
+	signText.TextColor3 = Color3.fromRGB(255, 214, 150)
+	signText.TextStrokeTransparency = 0.5
+	signText.Parent = sign
 
 	-- Spawn (no forcefield), south side, facing the kitchen ----------------
 	local spawn = Instance.new("SpawnLocation")
@@ -168,15 +216,7 @@ function KitchenBuilder.build(ctx)
 			Material = Enum.Material.SmoothPlastic,
 		})
 		bin.Parent = model
-		-- Dark or light text depending on how bright the bin is.
-		local lum = (meta.color.R * 0.3 + meta.color.G * 0.59 + meta.color.B * 0.11)
-		pill(bin, meta.display, {
-			offsetY = 2.6,
-			color = (lum > 0.6) and Color3.fromRGB(30, 28, 34) or Color3.fromRGB(245, 245, 250),
-			bg = (lum > 0.6) and Color3.fromRGB(245, 245, 250) or Color3.fromRGB(30, 28, 34),
-			bgTransparency = 0.1,
-			size = UDim2.fromOffset(88, 26),
-		})
+		faceLabel(bin, meta.display)
 		local pp = prompt(bin, "Add", ingName, ctx.Roles.Cook)
 		pp:SetAttribute("Ingredient", ingName)
 		table.insert(bins, { ingredient = ingName, prompt = pp, part = bin })

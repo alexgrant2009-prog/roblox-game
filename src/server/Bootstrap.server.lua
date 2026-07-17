@@ -221,6 +221,8 @@ end
 local function runShift()
 	-- Countdown
 	State.phase = "COUNTDOWN"
+	State.reputation = GameConfig.StartReputation
+	State.timeLeft = GameConfig.ShiftDuration -- show the full clock during the countdown
 	ctx.emitHud()
 	for i = GameConfig.ReadyCountdown, 1, -1 do
 		ctx.announce("Shift starts in " .. i .. "...", "info")
