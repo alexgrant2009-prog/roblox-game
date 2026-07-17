@@ -66,8 +66,8 @@ behavior), so bump it back to 2 to actually cook.
 ## Where to tune things
 
 Everything lives in `src/shared/GameConfig.lua`: shift length, starting
-reputation, patience, difficulty ramp, scoring, the bake step
-(`RequireBake`, `BakeDuration`), and the `AllowDiscard` hard-fail/soft-fail
-switch. Recipes and ingredients are in `src/shared/RecipeConfig.lua`, and every
+reputation, patience, difficulty ramp, scoring, the bake timing window
+(`RequireBake`, `BakeReadyTime`, `BakeBurnTime`, `RepLossBurn`), and the
+`AllowDiscard` hard-fail/soft-fail switch. Recipes and ingredients are in `src/shared/RecipeConfig.lua`, and every
 sound effect is in `src/shared/SoundConfig.lua` (built-in Roblox sounds by
 default — replace any `id` with a `rbxassetid://…` to use your own audio).

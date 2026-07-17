@@ -315,8 +315,10 @@ function ClientHUD.update(data)
 	if data.phase == "ACTIVE" then
 		local n = data.dishTotal or 0
 		local state, color
-		if data.dishBaking then
-			state, color = "baking...", Color3.fromRGB(255, 180, 90)
+		if data.dishBurnt then
+			state, color = "BURNT -- scrap it!", Color3.fromRGB(200, 90, 70)
+		elseif data.dishBaking then
+			state, color = "baking -- watch the oven!", Color3.fromRGB(255, 180, 90)
 		elseif data.dishBaked then
 			state, color = "baked -- serve it!", Color3.fromRGB(140, 220, 140)
 		elseif n > 0 then

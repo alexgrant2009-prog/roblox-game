@@ -140,6 +140,59 @@ function KitchenBuilder.build(ctx)
 	label(oven, "Oven", Color3.fromRGB(255, 180, 120))
 	local bakePrompt = prompt(oven, "Bake", "Oven", ctx.Roles.Cook, Enum.KeyCode.R)
 
+	-- Live bake gauge (hidden until baking): state text + progress bar with a
+	-- marker showing where the "ready" window opens.
+	local gauge = Instance.new("BillboardGui")
+	gauge.Name = "BakeGauge"
+	gauge.Size = UDim2.fromScale(7, 2)
+	gauge.StudsOffset = Vector3.new(0, 4.8, 0)
+	gauge.AlwaysOnTop = true
+	gauge.MaxDistance = 75
+	gauge.Enabled = false
+	gauge.Adornee = oven
+	gauge.Parent = oven
+
+	local gLabel = Instance.new("TextLabel")
+	gLabel.Size = UDim2.fromScale(1, 0.55)
+	gLabel.BackgroundTransparency = 1
+	gLabel.Font = Enum.Font.GothamBold
+	gLabel.TextScaled = true
+	gLabel.Text = "Baking..."
+	gLabel.TextColor3 = Color3.fromRGB(255, 200, 150)
+	gLabel.TextStrokeTransparency = 0.3
+	gLabel.Parent = gauge
+
+	local barBg = Instance.new("Frame")
+	barBg.AnchorPoint = Vector2.new(0.5, 1)
+	barBg.Position = UDim2.fromScale(0.5, 1)
+	barBg.Size = UDim2.fromScale(0.92, 0.3)
+	barBg.BackgroundColor3 = Color3.fromRGB(20, 18, 22)
+	barBg.BorderSizePixel = 0
+	local bgCorner = Instance.new("UICorner")
+	bgCorner.CornerRadius = UDim.new(0.5, 0)
+	bgCorner.Parent = barBg
+	barBg.Parent = gauge
+
+	local barFill = Instance.new("Frame")
+	barFill.Size = UDim2.new(0, 0, 1, 0)
+	barFill.BackgroundColor3 = Color3.fromRGB(255, 120, 40)
+	barFill.BorderSizePixel = 0
+	local bfCorner = Instance.new("UICorner")
+	bfCorner.CornerRadius = UDim.new(0.5, 0)
+	bfCorner.Parent = barFill
+	barFill.Parent = barBg
+
+	-- Marker at the start of the ready window.
+	local readyFrac = ctx.Config.BakeReadyTime / ctx.Config.BakeBurnTime
+	local marker = Instance.new("Frame")
+	marker.AnchorPoint = Vector2.new(0.5, 0.5)
+	marker.Position = UDim2.fromScale(readyFrac, 0.5)
+	marker.Size = UDim2.new(0, 3, 1, 2)
+	marker.BackgroundColor3 = Color3.fromRGB(150, 255, 150)
+	marker.BorderSizePixel = 0
+	marker.ZIndex = 2
+	marker.Parent = barBg
+
 	-- Serve window (the pass)
 	local pass = makePart({
 		Name = "SubmitStation",
@@ -169,7 +222,7 @@ function KitchenBuilder.build(ctx)
 		model = model,
 		bins = bins,
 		mixing = { part = bowl, tastePrompt = tastePrompt, discardPrompt = discardPrompt },
-		oven = { part = oven, bakePrompt = bakePrompt },
+		oven = { part = oven, bakePrompt = bakePrompt, gauge = { gui = gauge, label = gLabel, fill = barFill } },
 		submit = { part = pass, servePrompt = servePrompt },
 	}
 end

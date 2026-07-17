@@ -24,6 +24,13 @@ function SubmitStation.handleServe(ctx, player: Player)
 		return
 	end
 
+	-- A burnt dish can't be served -- scrap it.
+	if ctx.Dish.burnt then
+		ctx.announce("It's burnt -- scrap it and bake a fresh one.", "info")
+		ctx.sfxClient(player, "ServeFail")
+		return
+	end
+
 	-- Must be baked first (no penalty for trying -- just a nudge).
 	if ctx.Config.RequireBake and not ctx.Dish.baked then
 		if ctx.Dish:isEmpty() then

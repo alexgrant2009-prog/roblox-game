@@ -16,6 +16,8 @@ function DishState.new()
 		total = 0,
 		baked = false,
 		baking = false,
+		burnt = false,
+		bakeElapsed = 0, -- seconds the current dish has spent in the oven
 		bakeId = 0, -- bumped whenever a pending bake should be invalidated
 	}, DishState)
 end
@@ -33,6 +35,8 @@ function DishState:clear()
 	self.total = 0
 	self.baked = false
 	self.baking = false
+	self.burnt = false
+	self.bakeElapsed = 0
 	self.bakeId += 1 -- invalidate any in-flight bake
 end
 
@@ -40,23 +44,35 @@ function DishState:isEmpty(): boolean
 	return self.total == 0
 end
 
--- Begin a bake; returns a token the caller must pass back to finishBake so a
--- stale timer (dish scrapped / round ended mid-bake) can't complete.
+-- Begin a bake. Returns a token; the bake loop keeps running only while this
+-- token still matches bakeId, so a scrap/clear (which bumps bakeId) stops it.
 function DishState:startBake(): number
 	self.baking = true
 	self.baked = false
+	self.burnt = false
+	self.bakeElapsed = 0
 	self.bakeId += 1
 	return self.bakeId
 end
 
--- Complete a bake only if it's still the one that started. Returns success.
-function DishState:finishBake(token: number): boolean
-	if self.baking and self.bakeId == token then
-		self.baking = false
-		self.baked = true
-		return true
-	end
-	return false
+-- Taken out during the ready window -> properly baked.
+function DishState:finishBake()
+	self.baking = false
+	self.baked = true
+end
+
+-- Taken out too early -> still raw, back to square one for the oven.
+function DishState:cancelBake()
+	self.baking = false
+	self.baked = false
+	self.bakeElapsed = 0
+end
+
+-- Left in too long -> burnt and ruined; must be scrapped.
+function DishState:burn()
+	self.baking = false
+	self.baked = false
+	self.burnt = true
 end
 
 -- A defensive copy of the current contents.

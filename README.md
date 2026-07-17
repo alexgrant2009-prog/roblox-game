@@ -48,7 +48,8 @@ Roles **rotate every round** so everyone plays all three across a session.
 3. Orders spawn into a queue, each with a **patience timer**. The Reader sees
    them; the front order is "now serving".
 4. Cook builds the dish; Taster tastes for hints; Reader relays the recipe.
-5. Cook **bakes** the dish in the oven (it can't be served raw), then serves at
+5. Cook **bakes** the dish in the oven — a timing challenge: pull it out during
+   the **ready window** or it **burns** and has to be scrapped. Then serves at
    the window — perfect / close / wrong is scored.
 6. Shift ends when the **timer** runs out or **reputation** hits zero.
 7. Summary screen → roles rotate → next round.
@@ -66,7 +67,7 @@ Roles **rotate every round** so everyone plays all three across a session.
 | `OrderManager` | Server | Picks recipes, patience timers, **fires ticket to Reader only** |
 | `DishState`    | Server | Tracks the in-progress dish + its bake state |
 | `IngredientStation` | Server | ProximityPrompt triggers → role check → DishState / taste |
-| `OvenStation`  | Server | The bake step: role check, timed bake, oven glow, bake sounds |
+| `OvenStation`  | Server | The bake step: put-in/take-out timing window, burn, live oven gauge + glow |
 | `TasteService` | Server | Diffs dish vs recipe, fuzzy hint to Taster only |
 | `SubmitStation`| Server | Scores final dish (must be baked), adjusts reputation, queues next order |
 | `KitchenBuilder`| Server | Spawns the whole playable kitchen (incl. oven) at runtime |
@@ -84,7 +85,11 @@ The spec left three open; here's what shipped (all flippable in `GameConfig`):
 - **Fuzzy taste hints.** "It needs to be sweeter", "too much flour" — never a
   number. Funnier and harder to cheese than an exact diff.
 - **Soft fail.** The Cook can scrap the bowl and restart (`AllowDiscard = true`).
-  Set it `false` for hard-fail panic.
+  Set it `false` for hard-fail panic — a burnt dish can always be scrapped
+  regardless, so a hard-fail round can't soft-lock.
+- **Bake is a hard fail.** Leave the dish in past `BakeBurnTime` and it burns —
+  ruined, scrap and redo. Tune the window with `BakeReadyTime`/`BakeBurnTime`
+  (and `RepLossBurn` if you want burning to cost reputation too).
 - **Labeled bins.** Bins show their ingredient name — friendlier to learn. The
   hidden-info challenge is the *recipe*, not the pantry layout.
 

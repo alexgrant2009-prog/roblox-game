@@ -103,6 +103,7 @@ function ctx.emitHud()
 		dishTotal = Dish.total, -- Cook feedback: how many things are in the bowl (never the recipe)
 		dishBaked = Dish.baked,
 		dishBaking = Dish.baking,
+		dishBurnt = Dish.burnt,
 	})
 end
 
@@ -124,6 +125,11 @@ end
 -- ---------------------------------------------------------------------------
 local kitchen = KitchenBuilder.build(ctx)
 ctx.Kitchen = kitchen
+
+-- Return the oven to idle (used on scrap and round reset).
+function ctx.resetOven()
+	OvenStation.idle(ctx.Kitchen and ctx.Kitchen.oven)
+end
 
 for _, bin in ipairs(kitchen.bins) do
 	bin.prompt.Triggered:Connect(function(player)
@@ -227,6 +233,7 @@ local function runShift()
 	State.reputation = GameConfig.StartReputation
 	State.timeLeft = GameConfig.ShiftDuration
 	Dish:clear()
+	ctx.resetOven()
 	Orders:reset()
 	Orders:refreshTicket()
 	ctx.emitHud()

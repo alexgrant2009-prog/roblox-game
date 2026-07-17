@@ -35,9 +35,11 @@ GameConfig.ScorePartial     = 40
 GameConfig.MatchThreshold   = 1.0   -- >= this similarity counts as a perfect serve
 GameConfig.PartialThreshold = 0.75  -- >= this (but < perfect) is a partial serve
 
--- Oven bake step
-GameConfig.RequireBake      = true  -- a dish must be baked before it can be served
-GameConfig.BakeDuration     = 5     -- seconds in the oven
+-- Oven bake step (timing window + burn)
+GameConfig.RequireBake   = true   -- a dish must be baked before it can be served
+GameConfig.BakeReadyTime = 3.5    -- in the oven this long => properly baked (take it out!)
+GameConfig.BakeBurnTime  = 7.0    -- left in this long => burnt and ruined (must scrap)
+GameConfig.RepLossBurn   = 0      -- reputation lost when a dish burns (0 = punishment is just lost time)
 
 -- Design decision (see README "Things decided"):
 -- Soft fail -- the Cook can scrap the bowl and start over. Set false for hard-fail panic.
