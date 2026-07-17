@@ -37,6 +37,7 @@ local State = {
 	reputation = GameConfig.StartReputation,
 	score = 0,
 	perfect = 0,
+	streak = 0,
 	timeLeft = 0,
 	round = 0,
 	ready = {} :: { [Player]: boolean },
@@ -111,6 +112,7 @@ function ctx.emitHud()
 		timeLeft = math.max(0, math.floor(State.timeLeft)),
 		round = State.round,
 		roundsTotal = GameConfig.RoundsPerSession,
+		streak = State.streak,
 		dishTotal = Dish.total, -- Cook feedback: how many things are in the bowl (never the recipe)
 		dishBaked = Dish.baked,
 		dishBaking = Dish.baking,
@@ -248,6 +250,7 @@ local function runShift()
 	State.phase = "ACTIVE"
 	State.reputation = GameConfig.StartReputation
 	State.timeLeft = GameConfig.ShiftDuration
+	State.streak = 0
 	Dish:clear()
 	ctx.resetOven()
 	CarrySystem.clearAll()

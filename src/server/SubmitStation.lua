@@ -51,18 +51,24 @@ function SubmitStation.handleServe(ctx, player: Player)
 	ctx.emitDishChanged()
 
 	if score >= ctx.Config.MatchThreshold then
-		ctx.State.score += ctx.Config.ScorePerfect
+		ctx.State.streak += 1
+		local mult = math.min(1 + ctx.Config.StreakMultStep * (ctx.State.streak - 1), ctx.Config.StreakMultMax)
+		local points = math.floor(ctx.Config.ScorePerfect * mult)
+		ctx.State.score += points
 		ctx.State.perfect += 1
 		ctx.sfxAt(servePart, "ServePerfect")
 		task.delay(0.12, function()
 			ctx.sfxAt(servePart, "ServePerfect2") -- two-note success chime
 		end)
-		ctx.announce(("Perfect %s! +%d"):format(front.recipe.name, ctx.Config.ScorePerfect), "good")
+		local streakTag = (ctx.State.streak >= 2) and (" 🔥x%d"):format(ctx.State.streak) or ""
+		ctx.announce(("Perfect %s! +%d%s"):format(front.recipe.name, points, streakTag), "good")
 	elseif score >= ctx.Config.PartialThreshold then
+		ctx.State.streak = 0
 		ctx.State.score += ctx.Config.ScorePartial
 		ctx.sfxAt(servePart, "ServePartial")
 		ctx.announce(("Close enough on the %s. +%d"):format(front.recipe.name, ctx.Config.ScorePartial), "good")
 	else
+		ctx.State.streak = 0
 		ctx.sfxAt(servePart, "ServeFail")
 		ctx.loseRep(ctx.Config.RepLossWrong, ("That was not a %s..."):format(front.recipe.name))
 	end

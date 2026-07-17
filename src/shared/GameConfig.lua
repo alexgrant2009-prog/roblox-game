@@ -40,6 +40,11 @@ GameConfig.PartialThreshold = 0.75  -- >= this (but < perfect) is a partial serv
 -- the shift is always worth at least 1, a failed shift is 0.
 GameConfig.StarThresholds   = { 150, 350, 600 }
 
+-- Combo: consecutive perfect serves multiply the perfect score. A partial,
+-- wrong, or timed-out order resets the streak.
+GameConfig.StreakMultStep   = 0.25  -- +25% per consecutive perfect
+GameConfig.StreakMultMax    = 3.0   -- multiplier cap
+
 -- Oven bake step (timing window + burn)
 GameConfig.RequireBake   = true   -- a dish must be baked before it can be served
 GameConfig.BakeReadyTime = 3.5    -- in the oven this long => properly baked (take it out!)

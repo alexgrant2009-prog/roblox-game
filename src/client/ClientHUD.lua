@@ -13,6 +13,7 @@ local timerLabel: TextLabel
 local scoreLabel: TextLabel
 local roleBadge: TextLabel
 local roleDesc: TextLabel
+local streakLabel: TextLabel
 local helpFrame: Frame
 local helpHint: TextLabel
 local helpPinned = false -- toggled with H
@@ -116,6 +117,23 @@ function ClientHUD.init(player: Player, rem)
 	roleDesc.TextColor3 = Color3.fromRGB(190, 190, 200)
 	roleDesc.Text = ""
 	roleDesc.Parent = badge
+
+	-- Combo streak badge (below the role badge; hidden until streak >= 2)
+	streakLabel = Instance.new("TextLabel")
+	streakLabel.AnchorPoint = Vector2.new(0, 0)
+	streakLabel.Position = UDim2.new(0, 12, 0, 82)
+	streakLabel.Size = UDim2.new(0, 260, 0, 34)
+	streakLabel.BackgroundColor3 = Color3.fromRGB(60, 30, 20)
+	streakLabel.BackgroundTransparency = 0.1
+	streakLabel.Font = Enum.Font.GothamBold
+	streakLabel.TextSize = 20
+	streakLabel.TextColor3 = Color3.fromRGB(255, 180, 90)
+	streakLabel.Text = ""
+	streakLabel.Visible = false
+	local strc = Instance.new("UICorner")
+	strc.CornerRadius = UDim.new(0, 10)
+	strc.Parent = streakLabel
+	streakLabel.Parent = gui
 
 	-- Cook's bowl counter (bottom-left; only meaningful info a Cook gets) ---
 	dishLabel = Instance.new("TextLabel")
@@ -413,6 +431,17 @@ function ClientHUD.update(data)
 	repLabel.Text = "Rep " .. string.rep("♥", data.reputation or 0) .. string.rep("·", math.max(0, (data.maxReputation or 0) - (data.reputation or 0)))
 	timerLabel.Text = "Time " .. fmtTime(data.timeLeft or 0)
 	scoreLabel.Text = "Score " .. tostring(data.score or 0)
+
+	-- Combo streak badge
+	local streak = data.streak or 0
+	if streakLabel then
+		if streak >= 2 and data.phase == "ACTIVE" then
+			streakLabel.Visible = true
+			streakLabel.Text = string.format("🔥 STREAK x%d", streak)
+		else
+			streakLabel.Visible = false
+		end
+	end
 
 	-- Cook feedback: how many items are in the bowl (never what they should be),
 	-- plus the bake state so the Cook knows to oven it before serving.

@@ -102,6 +102,7 @@ function OrderManager:update(dt: number, frac: number)
 		o.patience -= dt
 		if o.patience <= 0 then
 			table.remove(self.queue, i)
+			self.ctx.State.streak = 0 -- a missed order breaks the combo
 			self.ctx.sfxAll("OrderTimeout")
 			self.ctx.loseRep(self.ctx.Config.RepLossMissed,
 				("The %s order timed out."):format(o.recipe.name))
