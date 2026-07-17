@@ -17,12 +17,37 @@ local CarrySystem = {}
 
 local DEPOSIT_RANGE = 6.5
 
--- [Player] = { ingredient = string, model = Model }
-local carrying: { [Player]: { ingredient: string, model: Model } } = {}
+-- Right arm raised forward while carrying (no animation asset needed -- we just
+-- offset the shoulder joint). Tune the angle here if the pose looks off.
+local CARRY_POSE = CFrame.Angles(math.rad(-62), 0, 0)
+
+type Carry = {
+	ingredient: string,
+	model: Model,
+	pose: { motor: Motor6D, c0: CFrame }?,
+}
+local carrying: { [Player]: Carry } = {}
+
+local function getRightShoulder(character: Instance): Motor6D?
+	local arm = character:FindFirstChild("RightUpperArm") -- R15
+	local m = arm and arm:FindFirstChild("RightShoulder")
+	if m and m:IsA("Motor6D") then
+		return m
+	end
+	local torso = character:FindFirstChild("Torso") -- R6
+	local m6 = torso and torso:FindFirstChild("Right Shoulder")
+	if m6 and m6:IsA("Motor6D") then
+		return m6
+	end
+	return nil
+end
 
 local function removeCarry(player: Player)
 	local c = carrying[player]
 	if c then
+		if c.pose and c.pose.motor and c.pose.motor.Parent then
+			c.pose.motor.C0 = c.pose.c0 -- restore the arm
+		end
 		if c.model then
 			c.model:Destroy()
 		end
@@ -103,7 +128,14 @@ function CarrySystem.grab(ctx, player: Player, ingredient: string)
 		return
 	end
 
-	carrying[player] = { ingredient = ingredient, model = model }
+	local record: Carry = { ingredient = ingredient, model = model }
+	-- Raise the right arm forward so it reads as "holding" the item.
+	local shoulder = getRightShoulder(character)
+	if shoulder then
+		record.pose = { motor = shoulder, c0 = shoulder.C0 }
+		shoulder.C0 = shoulder.C0 * CARRY_POSE
+	end
+	carrying[player] = record
 	ctx.sfxAt(character:FindFirstChild("HumanoidRootPart"), "AddIngredient")
 end
 
