@@ -53,15 +53,18 @@ If you don't want Rojo, mirror the tree manually in Studio:
 
 The folder names and layout matter — the scripts `require` each other by path.
 
-## Testing with 2+ players
+## Testing
 
-The game needs at least 2 players (see `GameConfig.MinPlayers`). In Studio use
-**Test → Clients and Servers**, set **2 players**, and **Start**. You'll get two
-client windows plus a server window; ready up in both.
+**Solo (default).** Just press **Play**. `GameConfig.MinPlayers = 1` and
+`SoloRoleAll = true`, so a lone player gets the **Solo** role — you can read the
+ticket, cook, bake, and taste all by yourself to walk the whole loop. Ready up
+on the title screen and go.
 
-To poke around solo, temporarily set `GameConfig.MinPlayers = 1` — with one
-player you'll be the Reader and the kitchen prompts stay hidden (that's correct
-behavior), so bump it back to 2 to actually cook.
+**Real hidden-info game (2–4 players).** Set `GameConfig.MinPlayers = 2` (leave
+`SoloRoleAll` as-is; it only kicks in with exactly one player). In Studio use
+**Test → Clients and Servers**, choose **2–4 players**, and **Start**. Each
+client gets a different role, and the ticket only reaches whoever is the Reader
+— that's the game as designed.
 
 ## Where to tune things
 

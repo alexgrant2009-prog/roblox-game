@@ -11,7 +11,7 @@ local DishMath = require(Shared.DishMath)
 local SubmitStation = {}
 
 function SubmitStation.handleServe(ctx, player: Player)
-	if ctx.Roles:getRole(player) ~= ctx.Roles.Cook then
+	if not ctx.Roles:can(player, ctx.Roles.Cook) then
 		return
 	end
 	if ctx.State.phase ~= "ACTIVE" then

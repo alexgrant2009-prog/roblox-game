@@ -14,6 +14,7 @@ RoleManager.__index = RoleManager
 RoleManager.Reader = "Reader"
 RoleManager.Cook   = "Cook"
 RoleManager.Taster = "Taster"
+RoleManager.Solo   = "Solo" -- lone player during testing: can do everything
 
 function RoleManager.new()
 	return setmetatable({
@@ -33,14 +34,26 @@ local function roleTemplate(count: number): { string }
 end
 
 -- Assign roles for this round. Uses rotationOffset so roles cycle round to round.
-function RoleManager:assign(players: { Player })
-	local template = roleTemplate(#players)
+-- If `soloAll` and there's exactly one player, they get the Solo role (all
+-- abilities) so the game can be walked through end-to-end while testing.
+function RoleManager:assign(players: { Player }, soloAll: boolean?)
 	self.assignments = {}
+	if soloAll and #players == 1 then
+		self.assignments[players[1]] = RoleManager.Solo
+		return self.assignments
+	end
+	local template = roleTemplate(#players)
 	for i, player in ipairs(players) do
 		local idx = ((i - 1 + self.rotationOffset) % #template) + 1
 		self.assignments[player] = template[idx]
 	end
 	return self.assignments
+end
+
+-- True if the player currently holds `role` (Solo counts as every role).
+function RoleManager:can(player: Player, role: string): boolean
+	local r = self.assignments[player]
+	return r == role or r == RoleManager.Solo
 end
 
 function RoleManager:rotate()
@@ -67,8 +80,14 @@ function RoleManager:playersWithRole(role: string): { Player }
 end
 
 -- The single Reader (the only client the Ticket event is ever fired at).
+-- A Solo player counts as the Reader too.
 function RoleManager:reader(): Player?
-	return self:playersWithRole(RoleManager.Reader)[1]
+	for player, r in pairs(self.assignments) do
+		if (r == RoleManager.Reader or r == RoleManager.Solo) and player.Parent then
+			return player
+		end
+	end
+	return nil
 end
 
 return RoleManager

@@ -279,7 +279,7 @@ task.spawn(function()
 				break
 			end
 			State.round = round
-			Roles:assign(currentPlayers())
+			Roles:assign(currentPlayers(), GameConfig.SoloRoleAll)
 			broadcastRoles()
 
 			runShift()

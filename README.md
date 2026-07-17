@@ -35,6 +35,7 @@ cosmetic — the server is the authority.
 | **Cook**   | Add ingredients, **bake in the oven**, scrap the bowl, serve the dish | See the ticket — there's no recipe data on their client at all |
 | **Taster** | Taste the in-progress bowl for a fuzzy hint | See the ticket |
 
+- 1 player → Solo (all roles — for testing; toggle with `SoloRoleAll`)
 - 2 players → Reader + Cook
 - 3 players → Reader + Cook + Taster
 - 4 players → Reader + Cook + Taster + **second Cook** (kitchen gets busy)

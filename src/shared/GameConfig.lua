@@ -5,8 +5,9 @@
 local GameConfig = {}
 
 -- Lobby / session
-GameConfig.MinPlayers       = 2
+GameConfig.MinPlayers       = 1     -- 1 makes solo testing work; use 2 for the real hidden-info game
 GameConfig.MaxPlayers       = 4
+GameConfig.SoloRoleAll      = true  -- a lone player gets every role so the loop is playable solo
 GameConfig.ReadyCountdown   = 5     -- seconds between "all ready" and shift start
 GameConfig.RoundsPerSession = 3     -- rounds before returning to the lobby (roles rotate each round)
 GameConfig.ReadyTimeout     = 25    -- start anyway after this many seconds if min players present

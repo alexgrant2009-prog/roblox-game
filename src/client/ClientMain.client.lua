@@ -35,7 +35,7 @@ ClientTasteUI.init(player)
 local function gatePrompt(pp: ProximityPrompt)
 	local role = pp:GetAttribute("BakeryRole")
 	if role ~= nil then
-		pp.Enabled = (role == myRole)
+		pp.Enabled = (role == myRole) or (myRole == "Solo")
 	end
 end
 

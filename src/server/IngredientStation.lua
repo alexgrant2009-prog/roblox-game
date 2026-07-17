@@ -9,7 +9,7 @@ local IngredientStation = {}
 
 -- Add one unit of an ingredient to the shared bowl. Cooks only.
 function IngredientStation.handleAdd(ctx, player: Player, ingredient: string)
-	if ctx.Roles:getRole(player) ~= ctx.Roles.Cook then
+	if not ctx.Roles:can(player, ctx.Roles.Cook) then
 		return
 	end
 	if ctx.State.phase ~= "ACTIVE" then
@@ -28,7 +28,7 @@ end
 
 -- Taste the in-progress dish -> fuzzy hint fired back to this Taster only.
 function IngredientStation.handleTaste(ctx, player: Player)
-	if ctx.Roles:getRole(player) ~= ctx.Roles.Taster then
+	if not ctx.Roles:can(player, ctx.Roles.Taster) then
 		return
 	end
 	if ctx.State.phase ~= "ACTIVE" then
@@ -42,7 +42,7 @@ end
 
 -- Scrap the bowl and start over (soft fail). Cooks only, and only if enabled.
 function IngredientStation.handleDiscard(ctx, player: Player)
-	if ctx.Roles:getRole(player) ~= ctx.Roles.Cook then
+	if not ctx.Roles:can(player, ctx.Roles.Cook) then
 		return
 	end
 	if ctx.State.phase ~= "ACTIVE" then

@@ -181,7 +181,7 @@ function OvenStation.takeOut(ctx, oven)
 end
 
 function OvenStation.handleBake(ctx, player: Player)
-	if ctx.Roles:getRole(player) ~= ctx.Roles.Cook then
+	if not ctx.Roles:can(player, ctx.Roles.Cook) then
 		return
 	end
 	if ctx.State.phase ~= "ACTIVE" then

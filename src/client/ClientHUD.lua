@@ -21,8 +21,9 @@ local hasReadied = false
 
 local ROLE_INFO = {
 	Reader = { color = Color3.fromRGB(80, 130, 225), desc = "Read the tickets aloud. You can't touch the kitchen." },
-	Cook = { color = Color3.fromRGB(230, 150, 70), desc = "Add ingredients & serve. You can't see the ticket." },
+	Cook = { color = Color3.fromRGB(230, 150, 70), desc = "Add ingredients, bake & serve. You can't see the ticket." },
 	Taster = { color = Color3.fromRGB(205, 90, 150), desc = "Taste the bowl for hints. You can't see the ticket." },
+	Solo = { color = Color3.fromRGB(120, 220, 160), desc = "Solo test -- you can read, cook, and taste." },
 	Spectator = { color = Color3.fromRGB(120, 120, 130), desc = "Waiting for the next round..." },
 }
 
@@ -212,6 +213,17 @@ function ClientHUD.init(player: Player, rem)
 end
 
 local function pushToast(text: string, color: Color3)
+	-- Cap the feed so bursts (like the countdown) don't pile up.
+	local existing = {}
+	for _, ch in ipairs(toastHolder:GetChildren()) do
+		if ch:IsA("TextLabel") then
+			table.insert(existing, ch)
+		end
+	end
+	if #existing >= 4 then
+		existing[1]:Destroy()
+	end
+
 	local toast = Instance.new("TextLabel")
 	toast.Size = UDim2.new(1, 0, 0, 26)
 	toast.BackgroundColor3 = Color3.fromRGB(20, 18, 26)
@@ -225,7 +237,7 @@ local function pushToast(text: string, color: Color3)
 	c.Parent = toast
 	toast.Parent = toastHolder
 
-	task.delay(3.5, function()
+	task.delay(2.8, function()
 		local fade = TweenService:Create(toast, TweenInfo.new(0.5), {
 			BackgroundTransparency = 1,
 			TextTransparency = 1,
